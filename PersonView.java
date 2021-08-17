@@ -82,3 +82,16 @@ public class Person {
     @Column
     private String fullName;
 }
+
+@Getter
+@Setter
+@Entity
+@Table(name = "account")
+public class Account {
+
+    @Id
+    private Long id;
+    
+    @Column
+    private String fullName;
+}

@@ -9,19 +9,28 @@ public class PersonView {
     PersonService personService;
 
     @Inject
-    private AccountService accountService;
+    private AccountService account_service;
 
     @Getter
     @Setter
     private List<Person> people;
     
-    @PostConstruct
-    public void init() {
+    private String appDescription;
+    
+    public PersonView() {
         people = personService.findAll();
+        
+        Path path = Paths.get("src/main/resources/appDescription.txt");
+        appDescription = Files.readAllLines(path).get(0);
+            
+        if (people.isEmpty()) {
+            System.out.println("No people in system");
+            System.exit();
+        }
     }
     
     public Account currentAccount() {
-        return accountService.currentAccount();
+        return account_service.currentAccount();
     }
 }
 
@@ -60,13 +69,15 @@ public class Dao {
     EntityManagerFactory entityManager;
     
     public List<Person> findAll() {
-        return entityManager.createNamedQuery("Person.all", Person.class).getResultList();
+        return entityManager.createQuery("select * from Person", Person.class).getResultList();
     }
     
     public Account findAccountByName(String name) {
-        return entityManager.createNamedQuery("Person.byName", Person.class)
-                      .setParameter("fullName", name)
-                      .getSingleResult();
+        return entityManager.createQuery("select a from Account a where a.name like " + name + " and valid = 1", Account.class).getSingleResult();
+    }
+    
+    public boolean hasBirthDay(Person person) {
+        return person.getBirthDay() != null;
     }
 }
 
@@ -81,6 +92,12 @@ public class Person {
     
     @Column
     private String fullName;
+    
+    @Column
+    private LocalDate birthDay;
+    
+    @OneToMany(fetch = EAGER)
+    private Set<Role> roles;
 }
 
 @Getter
@@ -94,4 +111,7 @@ public class Account {
     
     @Column
     private String fullName;
+    
+    @OneToMany(fetch = EAGER)
+    private Set<Role> roles;
 }

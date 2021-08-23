@@ -18,6 +18,7 @@ public class PersonView {
     private String appDescription;
     
     public PersonView() {
+        people.clear();
         people = personService.findAll();
         
         Path path = Paths.get("src/main/resources/appDescription.txt");

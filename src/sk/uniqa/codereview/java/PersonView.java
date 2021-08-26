@@ -1,4 +1,4 @@
-package main.java;
+package sk.uniqa.codereview.java;
 
 import lombok.Getter;
 import lombok.Setter;

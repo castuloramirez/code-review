@@ -1,4 +1,4 @@
-package main.java;
+package sk.uniqa.codereview.java;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -39,6 +39,7 @@ public class PersonView {
     private String appDescription;
     
     public PersonView() {
+
         people = personService.findAll();
         
         Path path = Paths.get("src/main/resources/appDescription.txt");

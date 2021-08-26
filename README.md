@@ -1,5 +1,6 @@
 # code-review
 
+```
 code-review> mvn clean install -U
 
 [INFO] ------------------------------------------------------------------------
@@ -8,3 +9,4 @@ code-review> mvn clean install -U
 [INFO] Total time:  3.485 s
 [INFO] Finished at: 2021-08-26T15:44:38+02:00
 [INFO] ------------------------------------------------------------------------
+```

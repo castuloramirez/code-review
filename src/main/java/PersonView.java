@@ -1,5 +1,26 @@
+package main.java;
+
 import lombok.Getter;
 import lombok.Setter;
+
+import javax.annotation.Resource;
+import javax.ejb.SessionContext;
+import javax.ejb.Stateless;
+import javax.enterprise.context.SessionScoped;
+import javax.inject.Inject;
+import javax.inject.Named;
+import javax.management.relation.Role;
+import javax.persistence.*;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Set;
+
+import static javax.persistence.FetchType.EAGER;
 
 @Named
 @SessionScoped
@@ -21,11 +42,15 @@ public class PersonView {
         people = personService.findAll();
         
         Path path = Paths.get("src/main/resources/appDescription.txt");
-        appDescription = Files.readAllLines(path).get(0);
-            
+        try {
+            appDescription = Files.readAllLines(path).get(0);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         if (people.isEmpty()) {
             System.out.println("No people in system");
-            System.exit();
+            System.exit(0);
         }
     }
     
@@ -35,7 +60,7 @@ public class PersonView {
 }
 
 @Stateless
-public class PersonService {
+class PersonService {
 
     @Inject
     Dao dao;
@@ -46,9 +71,10 @@ public class PersonService {
 }
 
 @Stateless
-public class AccountService {
+class AccountService {
 
-    @Resource private SessionContext ctx;
+    @Resource
+    private SessionContext ctx;
     
     @Inject
     Dao dao;
@@ -57,23 +83,23 @@ public class AccountService {
     
     public Account currentAccount() {
         if (account == null) {
-            this.account = personDao.findAccountByName(ctx.getCallerPrincipal().getName());
+            this.account = dao.findAccountByName(ctx.getCallerPrincipal().getName());
         }
         return this.account;
     }
 }
 
-public class Dao {
+class Dao {
     
     @PersistenceContext
     EntityManagerFactory entityManager;
     
     public List<Person> findAll() {
-        return entityManager.createQuery("select * from Person", Person.class).getResultList();
+        return entityManager.createEntityManager().createQuery("select * from Person", Person.class).getResultList();
     }
     
     public Account findAccountByName(String name) {
-        return entityManager.createQuery("select a from Account a where a.name like " + name + " and valid = 1", Account.class).getSingleResult();
+        return entityManager.createEntityManager().createQuery("select a from Account a where a.name like " + name + " and valid = 1", Account.class).getSingleResult();
     }
     
     public boolean hasBirthDay(Person person) {
@@ -85,7 +111,7 @@ public class Dao {
 @Setter
 @Entity
 @Table(name = "person")
-public class Person {
+class Person {
 
     @Id
     private Long id;
@@ -104,7 +130,7 @@ public class Person {
 @Setter
 @Entity
 @Table(name = "account")
-public class Account {
+class Account {
 
     @Id
     private Long id;
